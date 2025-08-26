@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Regalos - Baby Shower</title>
+    <style>
+        :root {
+            --primary-color: #007c1f;
+            --secondary-color: #ffffff;
+            --accent-color: #007c1f;
+            --text-color: #ffffff;
+            --light-color: #005304;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5d9ad;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-color);
+            text-align: center;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .admin-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(158, 158, 158, 0.678);
+            border: none;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            color: var(--light-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            background: rgba(151, 151, 151, 0.5);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .gift-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gift-item {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .gift-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .gift-item h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .gift-item p {
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .quantity span {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .select-btn {
+            background-color: var(--primary-color);
+            color: var(--light-color);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .select-btn:hover:not(:disabled) {
+            background-color: #ffffff;
+        }
+
+        .select-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .selected {
+            background-color: #e0f7fa;
+            border: 2px solid var(--accent-color);
+        }
+
+        .selected-mark {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--accent-color);
+            color: rgb(0, 0, 0);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .admin-panel {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .admin-panel h2 {
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .admin-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .admin-form {
+            background-color: #dcffe0;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .admin-form h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ffffff;
+            border-radius: 4px;
+        }
+
+        .save-btn {
+            background-color: var(--accent-color);
+            color: var(--light-color);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .save-btn:hover {
+            background-color: #4db6db;
+        }
+
+        .theme-selector {
+            margin-top: 1rem;
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .theme-btn.pink {
+            background-color: #ff9eb6;
+        }
+
+        .theme-btn.blue {
+            background-color: #6ec6e6;
+        }
+
+        .theme-btn.green {
+            background-color: #005703;
+        }
+
+        .theme-btn.purple {
+            background-color: #b39ddb;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            .admin-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Lista de Regalos para Christian</h1>
+        <p>¡Bienvenidos a la presentación del futuro heredero del reino! Para que su llegada sea todo un safari de alegría, hemos creado una lista de regalos con para el principe Christian. Encuentra aquí los obsequios esenciales para arrullar a nuestro cachorro y hacer que su madriguera sea perfecta. ¡Esperamos que estas ideas te hagan rugir de emoción!
+</p>
+        <button class="admin-toggle" id="adminToggle">Modo Admin</button>
+    </header>
+
+    <div class="container">
+        <div class="gift-list" id="giftList">
+            <!-- Los regalos se cargarán dinámicamente con JavaScript -->
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+            <h2>Panel de Administración</h2>
+            <div class="admin-controls">
+                <div class="admin-form">
+                    <h3>Añadir Nuevo Regalo</h3>
+                    <div class="form-group">
+                        <label for="giftName">Nombre del Regalo</label>
+                        <input type="text" id="giftName" placeholder="Ej: Pañales talla 1">
+                    </div>
+                    <div class="form-group">
+                        <label for="giftDescription">Descripción</label>
+                        <textarea id="giftDescription" rows="3" placeholder="Describe el regalo"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="giftQuantity">Cantidad Disponible</label>
+                        <input type="number" id="giftQuantity" min="1" value="1">
+                    </div>
+                    <button class="save-btn" id="addGiftBtn">Añadir Regalo</button>
+                </div>
+
+                <div class="admin-form">
+                    <h3>Personalización de la Página</h3>
+                    <div class="form-group">
+                        <label for="pageTitle">Título de la Página</label>
+                        <input type="text" id="pageTitle" value="Lista de Regalos - Baby Shower">
+                    </div>
+                    <div class="form-group">
+                        <label for="pageDescription">Descripción de la Página</label>
+                        <textarea id="pageDescription" rows="2" placeholder="Agrega una descripción para la página">Selecciona un regalo de nuestra lista especial</textarea>
+                    </div>
+                    <div class="form-group theme-selector">
+                        <label>Selecciona un Tema de Color</label>
+                        <div class="theme-buttons">
+                            <button class="theme-btn pink" data-theme="pink"></button>
+                            <button class="theme-btn blue" data-theme="blue"></button>
+                            <button class="theme-btn green" data-theme="green"></button>
+                            <button class="theme-btn purple" data-theme="purple"></button>
+                        </div>
+                    </div>
+                    <button class="save-btn" id="saveCustomizationBtn">Guardar Personalización</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2023 Lista de Regalos para Baby Shower - Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos del DOM
+            const adminToggle = document.getElementById('adminToggle');
+            const adminPanel = document.getElementById('adminPanel');
+            const giftList = document.getElementById('giftList');
+            const addGiftBtn = document.getElementById('addGiftBtn');
+            const saveCustomizationBtn = document.getElementById('saveCustomizationBtn');
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            
+            // Estado de la aplicación
+            let isAdminMode = false;
+            let selectedGifts = JSON.parse(localStorage.getItem('selectedGifts')) || {};
+            let gifts = JSON.parse(localStorage.getItem('gifts')) || [
+                { id: 1, name: "Cepillos para Teteros", description: "Cepillos para la limpieza y mantenimiento de los teteros", quantity: 2 },
+                { id: 2, name: "Tendedero y Ganchos de Ropa", quantity: 2 },
+                { id: 3, name: "Dispensador de Leche", description: "Envase para que distribuya las medidas de la leche en polvo", quantity: 1 },
+                { id: 4, name: "Cobijas hipoalergénicas", quantity: 3 },
+                { id: 5, name: "Toallas de Baño", quantity: 2 },
+                { id: 6, name: "Pañales de tela", quantity: 6 }
+            ];
+            
+            // Cargar personalización si existe
+            const customization = JSON.parse(localStorage.getItem('customization')) || {};
+            if (customization.title) {
+                document.querySelector('h1').textContent = customization.title;
+                document.getElementById('pageTitle').value = customization.title;
+            }
+            if (customization.description) {
+                document.querySelector('header p').textContent = customization.description;
+                document.getElementById('pageDescription').value = customization.description;
+            }
+            if (customization.theme) {
+                applyTheme(customization.theme);
+            }
+            
+            // Inicializar la lista de regalos
+            renderGiftList();
+            
+            // Event Listeners
+            adminToggle.addEventListener('click', toggleAdminMode);
+            addGiftBtn.addEventListener('click', addNewGift);
+            saveCustomizationBtn.addEventListener('click', saveCustomization);
+            themeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const theme = btn.getAttribute('data-theme');
+                    applyTheme(theme);
+                });
+            });
+            
+            // Funciones
+            function toggleAdminMode() {
+                isAdminMode = !isAdminMode;
+                adminPanel.style.display = isAdminMode ? 'block' : 'none';
+                adminToggle.textContent = isAdminMode ? 'Salir Modo Admin' : 'Modo Admin';
+                
+                // Recargar la lista para mostrar controles de admin si es necesario
+                renderGiftList();
+            }
+            
+            function renderGiftList() {
+                giftList.innerHTML = '';
+                
+                gifts.forEach(gift => {
+                    const giftElement = document.createElement('div');
+                    giftElement.className = 'gift-item';
+                    
+                    if (selectedGifts[gift.id]) {
+                        giftElement.classList.add('selected');
+                    }
+                    
+                    giftElement.innerHTML = `
+                        ${selectedGifts[gift.id] ? '<div class="selected-mark">✓</div>' : ''}
+                        <h3>${gift.name}</h3>
+                        <p>${gift.description}</p>
+                        <div class="quantity">
+                            Disponibles: <span>${gift.quantity}</span>
+                        </div>
+                        <button class="select-btn" data-id="${gift.id}" 
+                                ${gift.quantity === 0 || selectedGifts[gift.id] ? 'disabled' : ''}>
+                            ${selectedGifts[gift.id] ? 'Seleccionado' : (gift.quantity === 0 ? 'Agotado' : 'Seleccionar')}
+                        </button>
+                        ${isAdminMode ? `
+                            <div style="margin-top: 10px;">
+                                <button onclick="editGift(${gift.id})">Editar</button>
+                                <button onclick="deleteGift(${gift.id})">Eliminar</button>
+                            </div>
+                        ` : ''}
+                    `;
+                    
+                    giftList.appendChild(giftElement);
+                });
+                
+                // Agregar event listeners a los botones de selección
+                document.querySelectorAll('.select-btn').forEach(btn => {
+                    btn.addEventListener('click', selectGift);
+                });
+            }
+            
+            function selectGift(e) {
+                const giftId = parseInt(e.target.getAttribute('data-id'));
+                const gift = gifts.find(g => g.id === giftId);
+                
+                if (gift && gift.quantity > 0) {
+                    // Marcar como seleccionado
+                    selectedGifts[giftId] = true;
+                    localStorage.setItem('selectedGifts', JSON.stringify(selectedGifts));
+                    
+                    // Reducir la cantidad disponible
+                    gift.quantity--;
+                    localStorage.setItem('gifts', JSON.stringify(gifts));
+                    
+                    // Actualizar la interfaz
+                    renderGiftList();
+                    
+                    alert(`¡Gracias por seleccionar ${gift.name}!`);
+                }
+            }
+            
+            function addNewGift() {
+                const name = document.getElementById('giftName').value;
+                const description = document.getElementById('giftDescription').value;
+                const quantity = parseInt(document.getElementById('giftQuantity').value);
+                
+                if (!name || !description || isNaN(quantity) || quantity <= 0) {
+                    alert('Por favor, completa todos los campos correctamente.');
+                    return;
+                }
+                
+                // Crear nuevo regalo
+                const newId = gifts.length > 0 ? Math.max(...gifts.map(g => g.id)) + 1 : 1;
+                const newGift = {
+                    id: newId,
+                    name,
+                    description,
+                    quantity
+                };
+                
+                gifts.push(newGift);
+                localStorage.setItem('gifts', JSON.stringify(gifts));
+                
+                // Limpiar formulario
+                document.getElementById('giftName').value = '';
+                document.getElementById('giftDescription').value = '';
+                document.getElementById('giftQuantity').value = '1';
+                
+                // Actualizar la lista
+                renderGiftList();
+                
+                alert('Regalo añadido correctamente.');
+            }
+            
+            function saveCustomization() {
+                const title = document.getElementById('pageTitle').value;
+                const description = document.getElementById('pageDescription').value;
+                
+                if (!title) {
+                    alert('El título no puede estar vacío.');
+                    return;
+                }
+                
+                // Guardar personalización
+                const customization = {
+                    title,
+                    description,
+                    theme: document.body.getAttribute('data-theme') || 'pink'
+                };
+                
+                localStorage.setItem('customization', JSON.stringify(customization));
+                
+                // Aplicar cambios
+                document.querySelector('h1').textContent = title;
+                document.querySelector('header p').textContent = description;
+                
+                alert('Personalización guardada correctamente.');
+            }
+            
+            function applyTheme(theme) {
+                document.body.setAttribute('data-theme', theme);
+                
+                let primaryColor, secondaryColor, accentColor;
+                
+                switch(theme) {
+                    case 'blue':
+                        primaryColor = '#6ec6e6';
+                        secondaryColor = '#c8e6f5';
+                        accentColor = '#2196f3';
+                        break;
+                    case 'green':
+                        primaryColor = '#a5d6a7';
+                        secondaryColor = '#e8f5e9';
+                        accentColor = '#4caf50';
+                        break;
+                    case 'purple':
+                        primaryColor = '#b39ddb';
+                        secondaryColor = '#ede7f6';
+                        accentColor = '#673ab7';
+                        break;
+                    default: // pink
+                        primaryColor = '#ff9eb6';
+                        secondaryColor = '#c8e6f5';
+                        accentColor = '#ff4081';
+                }
+                
+                document.documentElement.style.setProperty('--primary-color', primaryColor);
+                document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+                document.documentElement.style.setProperty('--accent-color', accentColor);
+            }
+            
+            // Funciones globales para los botones de admin
+            window.editGift = function(id) {
+                const gift = gifts.find(g => g.id === id);
+                if (gift) {
+                    const newQuantity = prompt(`Editar cantidad disponible para "${gift.name}":`, gift.quantity);
+                    if (newQuantity !== null && !isNaN(newQuantity) && parseInt(newQuantity) >= 0) {
+                        gift.quantity = parseInt(newQuantity);
+                        localStorage.setItem('gifts', JSON.stringify(gifts));
+                        renderGiftList();
+                    }
+                }
+            };
+            
+            window.deleteGift = function(id) {
+                if (confirm('¿Estás seguro de que quieres eliminar este regalo?')) {
+                    gifts = gifts.filter(g => g.id !== id);
+                    localStorage.setItem('gifts', JSON.stringify(gifts));
+                    renderGiftList();
+                }
+            };
+        });
+    </script>
+</body>
+</html>
